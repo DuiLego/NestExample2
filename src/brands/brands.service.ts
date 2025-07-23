@@ -9,21 +9,35 @@ import { CreateBrandDTO, UpdateBrandDTO } from './dto';
 export class BrandsService {
 
   private brands : Brand[]= [
-        {
-            id: uuid(), 
-            name: 'Toyota', 
-            createdAt: new Date().getTime()
-        }
+    /* {
+        id: uuid(), 
+        name: 'Toyota', 
+        createdAt: new Date().getTime()
+    } */
   ];
 
+  /* Listar */
   create(createBrandDto: CreateBrandDTO) {
-    return 'This action adds a new brand';
+
+    const { name } = createBrandDto;
+
+    const brand: Brand = {
+      id: uuid(), 
+      name: name.toLocaleLowerCase(), 
+      createdAt: new Date().getTime()
+    }
+
+    this.brands.push(brand);
+    
+    return brand;
   }
 
+  /* Detalles */
   findAll() {
-    return `This action returns all brands`;
+    return this.brands;
   }
 
+  /* Crear */
   findOne(id: string) {
     const brand = this.brands.find( brand => brand.id === id );
 
@@ -32,11 +46,35 @@ export class BrandsService {
     return brand;
   }
 
-  update(id: number, updateBrandDto: UpdateBrandDTO) {
-    return `This action updates a #${id} brand`;
+  /* Actualizar */
+  update(id: string, updateBrandDto: UpdateBrandDTO) {
+    let brandDB = this.findOne(id);
+
+    this.brands = this.brands.map( brand => {
+        if(brand.id === id){
+            brandDB.updatedAt = new Date().getTime();
+
+            brandDB = {
+                ...brandDB, 
+                ...updateBrandDto
+            }
+
+            return brandDB;
+        }
+
+        return brand;
+    });
+    
+    return brandDB;    
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  /* Eliminar */
+  remove(id: string) {
+    this.brands = this.brands.filter( brand => brand.id !== id );
   }
+
+  /* Ingresar datos */
+    fillBrandsWithSeedData( brands: Brand[] ) {
+        this.brands = brands;
+    }
 }
